@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flow Rate Converter</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            width: 100%;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            font-weight: 300;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+            font-size: 1.1em;
+        }
+        
+        .input-container {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 0;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .input-container:focus-within {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        input[type="number"] {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            outline: none;
+            font-size: 1em;
+            background: transparent;
+        }
+        
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        
+        .unit {
+            padding: 12px 15px;
+            background: #f8f9fa;
+            color: #666;
+            font-weight: 600;
+            border-left: 1px solid #e0e0e0;
+            white-space: nowrap;
+            font-size: 0.9em;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .footer {
+            text-align: center;
+            color: #666;
+            margin-top: 25px;
+            font-style: italic;
+            font-size: 0.9em;
+        }
+        
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        
+        .input-container.active {
+            animation: pulse 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Flow Rate Converter</h1>
+        
+        <div class="input-group">
+            <div class="input-container">
+                <input type="number" id="m3sec" step="any" placeholder="Enter value...">
+                <span class="unit">m³/sec</span>
+            </div>
+        </div>
+        
+        <div class="input-group">
+            <div class="input-container">
+                <input type="number" id="mcmday" step="any" placeholder="Enter value...">
+                <span class="unit">MCM/day</span>
+            </div>
+        </div>
+        
+        <div class="input-group">
+            <div class="input-container">
+                <input type="number" id="bcmyear" step="any" placeholder="Enter value...">
+                <span class="unit">BCM/year</span>
+            </div>
+        </div>
+        
+        <div class="footer">
+            By Eng. Hosam El Nagar
+        </div>
+    </div>
+
+    <script>
+        const m3secInput = document.getElementById('m3sec');
+        const mcmdayInput = document.getElementById('mcmday');
+        const bcmyearInput = document.getElementById('bcmyear');
+        
+        let isUpdating = false;
+        
+        // Conversion functions
+        function m3secToMcmday(value) {
+            // 1 m³/sec = 86400 m³/day = 0.0864 MCM/day
+            return value * 0.0864;
+        }
+        
+        function m3secToBcmyear(value) {
+            // 1 m³/sec = 31,536,000 m³/year = 0.031536 BCM/year
+            return value * 0.031536;
+        }
+        
+        function mcmdayToM3sec(value) {
+            // 1 MCM/day = 1,000,000 m³/day = 11.574 m³/sec
+            return value * 11.574074074;
+        }
+        
+        function mcmdayToBcmyear(value) {
+            // 1 MCM/day = 365 MCM/year = 0.365 BCM/year
+            return value * 0.365;
+        }
+        
+        function bcmyearToM3sec(value) {
+            // 1 BCM/year = 1,000,000,000 m³/year = 31.71 m³/sec
+            return value * 31.70979198;
+        }
+        
+        function bcmyearToMcmday(value) {
+            // 1 BCM/year = 1000 MCM/year = 2.74 MCM/day
+            return value * 2.739726027;
+        }
+        
+        function updateFromM3sec() {
+            if (isUpdating) return;
+            isUpdating = true;
+            
+            const value = parseFloat(m3secInput.value);
+            if (!isNaN(value) && value !== '') {
+                mcmdayInput.value = m3secToMcmday(value).toFixed(3);
+                bcmyearInput.value = m3secToBcmyear(value).toFixed(3);
+            } else {
+                mcmdayInput.value = '';
+                bcmyearInput.value = '';
+            }
+            
+            isUpdating = false;
+        }
+        
+        function updateFromMcmday() {
+            if (isUpdating) return;
+            isUpdating = true;
+            
+            const value = parseFloat(mcmdayInput.value);
+            if (!isNaN(value) && value !== '') {
+                m3secInput.value = mcmdayToM3sec(value).toFixed(3);
+                bcmyearInput.value = mcmdayToBcmyear(value).toFixed(3);
+            } else {
+                m3secInput.value = '';
+                bcmyearInput.value = '';
+            }
+            
+            isUpdating = false;
+        }
+        
+        function updateFromBcmyear() {
+            if (isUpdating) return;
+            isUpdating = true;
+            
+            const value = parseFloat(bcmyearInput.value);
+            if (!isNaN(value) && value !== '') {
+                m3secInput.value = bcmyearToM3sec(value).toFixed(3);
+                mcmdayInput.value = bcmyearToMcmday(value).toFixed(3);
+            } else {
+                m3secInput.value = '';
+                mcmdayInput.value = '';
+            }
+            
+            isUpdating = false;
+        }
+        
+        // Add visual feedback
+        function addActiveEffect(input) {
+            input.parentElement.classList.add('active');
+            setTimeout(() => {
+                input.parentElement.classList.remove('active');
+            }, 300);
+        }
+        
+        // Event listeners
+        m3secInput.addEventListener('input', () => {
+            addActiveEffect(m3secInput);
+            updateFromM3sec();
+        });
+        
+        mcmdayInput.addEventListener('input', () => {
+            addActiveEffect(mcmdayInput);
+            updateFromMcmday();
+        });
+        
+        bcmyearInput.addEventListener('input', () => {
+            addActiveEffect(bcmyearInput);
+            updateFromBcmyear();
+        });
+        
+        // Clear all fields when any field is completely cleared
+        [m3secInput, mcmdayInput, bcmyearInput].forEach(input => {
+            input.addEventListener('keyup', (e) => {
+                if (e.target.value === '') {
+                    if (!isUpdating) {
+                        isUpdating = true;
+                        [m3secInput, mcmdayInput, bcmyearInput].forEach(inp => {
+                            if (inp !== e.target) inp.value = '';
+                        });
+                        isUpdating = false;
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
